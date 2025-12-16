@@ -8,11 +8,15 @@
 <body>
   <h2>📩 SMS Excel Plugin</h2>
 
-  <button onclick="readCell()">Read Selected Cell</button>
+  <button id="sendBtn">Send SMS</button>
 
   <p id="output"></p>
 
   <script>
+    Office.onReady(() => {
+      document.getElementById("sendBtn").onclick = readCell;
+    });
+
     function readCell() {
       Excel.run(async (context) => {
         const range = context.workbook.getSelectedRange();
@@ -20,7 +24,10 @@
         await context.sync();
 
         document.getElementById("output").innerText =
-          "Selected Cell Value: " + range.values[0][0];
+          "Selected Number: " + range.values[0][0];
+      }).catch(error => {
+        document.getElementById("output").innerText =
+          "Error: " + error;
       });
     }
   </script>
