@@ -8,36 +8,47 @@
 <body>
   <h2>📩 SMS Excel Plugin</h2>
 
-  <p>Select multiple cells (numbers) and click button</p>
+  <p><b>Message Template</b></p>
+  <textarea id="template" rows="4" cols="30">
+Dear {name}, your amount is {amount}
+  </textarea>
 
-  <button id="bulkBtn">Read Bulk Numbers</button>
+  <br><br>
+  <button id="previewBtn">Preview Messages</button>
 
   <div id="output"></div>
 
   <script>
     Office.onReady(() => {
-      document.getElementById("bulkBtn").onclick = readBulkNumbers;
+      document.getElementById("previewBtn").onclick = previewMessages;
     });
 
-    function readBulkNumbers() {
+    function previewMessages() {
       Excel.run(async (context) => {
         const range = context.workbook.getSelectedRange();
         range.load("values");
         await context.sync();
 
-        const values = range.values;
-        let html = "<b>Bulk Numbers:</b><br/>";
+        const rows = range.values;
+        const template = document.getElementById("template").value;
 
-        values.forEach(row => {
-          if (row[0]) {
-            html += row[0] + "<br/>";
+        let html = "<b>Message Preview:</b><br/><br/>";
+
+        rows.forEach(row => {
+          const mobile = row[0];
+          const name = row[1];
+          const amount = row[2];
+
+          if (mobile) {
+            let msg = template
+              .replace("{name}", name)
+              .replace("{amount}", amount);
+
+            html += mobile + " → " + msg + "<br/>";
           }
         });
 
         document.getElementById("output").innerHTML = html;
-      }).catch(err => {
-        document.getElementById("output").innerText =
-          "Error: " + err.message;
       });
     }
   </script>
