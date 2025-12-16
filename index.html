@@ -10,31 +10,34 @@
 
   <p>Select multiple cells (numbers) and click button</p>
 
-  <button id="sendBtn">Read Bulk Numbers</button>
+  <button id="bulkBtn">Read Bulk Numbers</button>
 
-  <ul id="output"></ul>
+  <div id="output"></div>
 
   <script>
     Office.onReady(() => {
-      document.getElementById("sendBtn").onclick = readBulk;
+      document.getElementById("bulkBtn").onclick = readBulkNumbers;
     });
 
-    function readBulk() {
+    function readBulkNumbers() {
       Excel.run(async (context) => {
         const range = context.workbook.getSelectedRange();
         range.load("values");
         await context.sync();
 
-        const list = document.getElementById("output");
-        list.innerHTML = "";
+        const values = range.values;
+        let html = "<b>Bulk Numbers:</b><br/>";
 
-        range.values.forEach(row => {
+        values.forEach(row => {
           if (row[0]) {
-            const li = document.createElement("li");
-            li.innerText = row[0];
-            list.appendChild(li);
+            html += row[0] + "<br/>";
           }
         });
+
+        document.getElementById("output").innerHTML = html;
+      }).catch(err => {
+        document.getElementById("output").innerText =
+          "Error: " + err.message;
       });
     }
   </script>
