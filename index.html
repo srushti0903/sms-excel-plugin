@@ -8,26 +8,33 @@
 <body>
   <h2>📩 SMS Excel Plugin</h2>
 
-  <button id="sendBtn">Send SMS</button>
+  <p>Select multiple cells (numbers) and click button</p>
 
-  <p id="output"></p>
+  <button id="sendBtn">Read Bulk Numbers</button>
+
+  <ul id="output"></ul>
 
   <script>
     Office.onReady(() => {
-      document.getElementById("sendBtn").onclick = readCell;
+      document.getElementById("sendBtn").onclick = readBulk;
     });
 
-    function readCell() {
+    function readBulk() {
       Excel.run(async (context) => {
         const range = context.workbook.getSelectedRange();
         range.load("values");
         await context.sync();
 
-        document.getElementById("output").innerText =
-          "Selected Number: " + range.values[0][0];
-      }).catch(error => {
-        document.getElementById("output").innerText =
-          "Error: " + error;
+        const list = document.getElementById("output");
+        list.innerHTML = "";
+
+        range.values.forEach(row => {
+          if (row[0]) {
+            const li = document.createElement("li");
+            li.innerText = row[0];
+            list.appendChild(li);
+          }
+        });
       });
     }
   </script>
